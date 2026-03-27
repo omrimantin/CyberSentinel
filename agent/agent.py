@@ -13,7 +13,7 @@ class Agent:
 
     def send_alert(self, alert_type, details_dict):
         packed = Protocol.pack(alert_type, details_dict)
-        encrypted = self.encryptor.encrypt(packed)
+        encrypted = self.encryptor.encrypt(packed.decode())
         self.sock.send(encrypted.encode())
 
         
