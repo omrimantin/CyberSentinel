@@ -18,19 +18,38 @@ Distributed real-time security monitoring platform (academic project).
 - Keep monitors independent: each monitor only calls `alert_callback(alert_type, details_dict)`
 - No global state; pass dependencies via `__init__`
 
-## Key Classes (to be implemented)
-| Class | File | Responsibility |
+## Shared AES Key
+All agents and the server use this hardcoded key:
+```
+7f026d24873b44fad78c46955d44fea914112f4edb7ba1159b1ce78a784e5959
+```
+
+## Progress — What's Done
+| Class | File | Status |
 |---|---|---|
-| `Encryptor` | shared/encryptor.py | AES-128 CBC encrypt/decrypt |
-| `Server` | server/server.py | Multi-client TCP server |
-| `ClientHandler` | server/server.py | One thread per connected agent |
-| `Dashboard` | server/dashboard.py | tkinter live event table |
-| `LogDB` | server/db.py | SQLite log storage |
-| `Agent` | agent/agent.py | Connects to server, starts all monitors |
-| `ProcessMonitor` | agent/process_monitor.py | Detects suspicious processes |
-| `NetworkMonitor` | agent/network_monitor.py | Detects suspicious connections |
-| `FileMonitor` | agent/file_monitor.py | Detects critical file changes |
-| `CameraMonitor` | agent/camera_monitor.py | Motion detection via webcam (opencv) |
+| `Encryptor` | shared/encryptor.py | ✅ Done |
+| `Protocol` | shared/protocol.py | ✅ Done |
+| `Server` | server/server.py | ✅ Done — multi-client TCP, AES decrypt, one thread per client |
+| `Agent` | agent/agent.py | ✅ Done — connects to server, `send_alert()` encrypts + sends |
+| `Dashboard` | server/dashboard.py | ⬜ Next |
+| `LogDB` | server/db.py | ⬜ Next |
+| `ProcessMonitor` | agent/process_monitor.py | ⬜ Next |
+| `NetworkMonitor` | agent/network_monitor.py | ⬜ Next |
+| `FileMonitor` | agent/file_monitor.py | ⬜ Next |
+| `CameraMonitor` | agent/camera_monitor.py | ⬜ Next |
+
+## What's Next (recommended order)
+1. **`server/db.py`** — `LogDB` class, SQLite, saves every received message
+2. **`server/dashboard.py`** — tkinter GUI, live event table, reads from LogDB
+3. **`agent/process_monitor.py`** — detects suspicious processes (psutil), calls `agent.send_alert()`
+4. **`agent/network_monitor.py`** — detects suspicious connections (psutil)
+5. **`agent/file_monitor.py`** — detects file changes (hashlib)
+6. **`agent/camera_monitor.py`** — motion detection (opencv)
+7. **Wire everything together** — Agent starts all monitors, server pipes events to dashboard
+
+## Split of Work
+- **omrimantin** → server/ files (db.py, dashboard.py)
+- **omri1213** → agent/ monitor files (process, network, file, camera)
 
 ## Dependencies
 ```
